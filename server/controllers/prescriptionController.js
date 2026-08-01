@@ -2,11 +2,10 @@ import asyncHandler from '../middleware/asyncHandler.js';
 import { sendResponse } from '../utils/responseHandler.js';
 import * as prescriptionService from '../services/prescriptionService.js';
 import Prescription from '../models/Prescription.js';
-import User from '../models/User.js';
 import Patient from '../models/Patient.js';
+import Doctor from '../models/Doctor.js';
 import sendEmail from '../utils/email.js';
 import PDFDocument from 'pdfkit';
-import Doctor from '../models/Doctor.js';
 
 // @desc    Generate prescription
 // @route   POST /api/v1/prescriptions
@@ -16,6 +15,7 @@ export const createPrescription = asyncHandler(async (req, res) => {
   if (!doctor) throw new Error('Doctor profile not found');
 
   const prescription = await prescriptionService.generatePrescription(doctor._id.toString(), req.body);
+  
   // Emit socket event
   const io = req.app.get('io');
   if (io) {
@@ -46,7 +46,7 @@ export const createPrescription = asyncHandler(async (req, res) => {
 // @desc    Get prescription by ID
 // @route   GET /api/v1/prescriptions/:id
 // @access  Private
-export const getPrescription = asyncHandler(async (req, res) => {
+export const getPrescriptionById = asyncHandler(async (req, res) => {
   const prescription = await prescriptionService.getPrescriptionById(req.params.id);
   if (!prescription) {
     res.status(404);
@@ -56,7 +56,7 @@ export const getPrescription = asyncHandler(async (req, res) => {
 });
 
 // @desc    Get patient prescriptions
-// @route   GET /api/v1/prescriptions/patient
+// @route   GET /api/v1/prescriptions/patient/:patientId
 // @access  Private/Patient
 export const getPatientPrescriptions = asyncHandler(async (req, res) => {
   const patient = await Patient.findOne({ userId: req.user.id });
@@ -70,4 +70,35 @@ export const getPatientPrescriptions = asyncHandler(async (req, res) => {
     .sort('-createdAt');
     
   sendResponse(res, 200, 'Prescriptions fetched', prescriptions);
+});
+
+// @desc    Download Prescription PDF
+// @route   GET /api/v1/prescriptions/:id/download
+// @access  Private/Patient/Doctor
+export const downloadPrescriptionPDF = asyncHandler(async (req, res) => {
+  const prescription = await Prescription.findById(req.params.id)
+    .populate('doctorId', 'userId')
+    .populate('patientId', 'userId');
+
+  if (!prescription) throw new Error('Prescription not found');
+
+  const doc = new PDFDocument();
+  res.header('Content-Type', 'application/pdf');
+  res.attachment(`prescription_${prescription._id}.pdf`);
+  doc.pipe(res);
+  
+  doc.fontSize(20).text('MedConnect AI - Digital Prescription', { align: 'center' });
+  doc.moveDown();
+  doc.fontSize(12).text(`Date: ${new Date(prescription.createdAt).toDateString()}`);
+  doc.text(`Diagnosis: ${prescription.diagnosis}`);
+  doc.moveDown();
+  doc.text('Medicines:');
+  prescription.medicines.forEach(m => {
+    doc.text(`- ${m.name} (${m.dosage}) : ${m.instructions}`);
+  });
+  if (prescription.advice) {
+    doc.moveDown();
+    doc.text(`Advice: ${prescription.advice}`);
+  }
+  doc.end();
 });
