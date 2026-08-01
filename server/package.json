@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@google/genai": "^0.1.1",
+    "@google/genai": "latest",
     "bcryptjs": "^2.4.3",
     "cloudinary": "^2.0.1",
     "cookie-parser": "^1.4.6",
