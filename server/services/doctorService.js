@@ -72,7 +72,8 @@ export const updateAvailability = async (userId, availabilityData) => {
     throw new Error('Doctor profile not found');
   }
   
-  doctor.availability = { ...doctor.availability, ...availabilityData };
+  const currentAvailability = doctor.availability ? doctor.toObject().availability : {};
+  doctor.availability = { ...currentAvailability, ...availabilityData };
   await doctor.save();
   return doctor.availability;
 };
