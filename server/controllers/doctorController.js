@@ -49,8 +49,7 @@ export const getDoctorById = asyncHandler(async (req, res) => {
 // @route   PUT /api/v1/doctors/availability
 // @access  Private/Doctor
 export const setAvailability = asyncHandler(async (req, res) => {
-  const doctor = await Doctor.findOne({ userId: req.user.id });
-  const availability = await doctorService.updateAvailability(doctor._id, req.body);
+  const availability = await doctorService.updateAvailability(req.user.id, req.body);
   sendResponse(res, 200, 'Availability updated successfully', availability);
 });
 
