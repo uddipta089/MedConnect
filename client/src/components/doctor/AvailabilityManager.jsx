@@ -11,19 +11,16 @@ const AvailabilityManager = ({ isOpen, onClose, onUpdate }) => {
   const [endTime, setEndTime] = useState('17:00');
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // The backend expects an array of slots. We will append to existing or replace.
-      // For simplicity, we just add this slot. 
       await api.put('/doctors/availability', {
-        availability: [{
-          dayOfWeek,
+        workingDays: [dayOfWeek],
+        workingHours: {
           startTime,
-          endTime,
-          isAvailable: true
-        }]
+          endTime
+        }
       });
       toast.success('Availability updated successfully!');
       onUpdate();
