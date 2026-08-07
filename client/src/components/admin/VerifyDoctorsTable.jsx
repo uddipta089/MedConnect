@@ -60,8 +60,8 @@ const VerifyDoctorsTable = () => {
           {doctors.map((doc) => (
             <tr key={doc._id} className="bg-white border-b hover:bg-slate-50 transition-colors">
               <td className="px-6 py-4 font-medium text-gray-900">Dr. {doc.userId?.firstName} {doc.userId?.lastName}</td>
-              <td className="px-6 py-4">{doc.specialization}</td>
-              <td className="px-6 py-4">{doc.experience} years</td>
+              <td className="px-6 py-4">{doc.specializationId?.name || 'Not specified'}</td>
+              <td className="px-6 py-4">{doc.experience ? `${doc.experience} years` : 'Not specified'}</td>
               <td className="px-6 py-4 font-mono text-xs">{doc.licenseNumber || 'N/A'}</td>
               <td className="px-6 py-4 text-right space-x-2">
                 <button 
