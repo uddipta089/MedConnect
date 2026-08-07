@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
     return userData;
   };
 
-    const register = async (userData) => {
+  const register = async (userData) => {
     const res = await api.post('/auth/register', userData);
     const { user: newUserData, token } = res.data.data;
     localStorage.setItem('token', token);
@@ -47,6 +47,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-
-
-  
+};
