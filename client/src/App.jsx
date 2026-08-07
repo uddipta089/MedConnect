@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import RootLayout from './layouts/RootLayout';
 import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import PatientDashboard from './pages/Patient/PatientDashboard';
 import DoctorDashboard from './pages/Doctor/DoctorDashboard';
@@ -11,8 +12,14 @@ const App = () => {
     <Routes>
       <Route path="/" element={<RootLayout />}>
         {/* Public Routes */}
-        <Route index element={<div className="flex-1 flex flex-col justify-center items-center"><h1 className="text-4xl font-bold text-gray-900">Welcome to MedConnect AI</h1><p className="mt-4 text-lg text-gray-600">The intelligent healthcare platform.</p></div>} />
+        <Route index element={
+          <div className="flex-1 flex flex-col justify-center items-center">
+            <h1 className="text-4xl font-bold text-gray-900">Welcome to MedConnect AI</h1>
+            <p className="mt-4 text-lg text-gray-600">The intelligent healthcare platform.</p>
+          </div>
+        } />
         <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
         
         {/* Protected Patient Routes */}
         <Route path="patient/dashboard" element={
