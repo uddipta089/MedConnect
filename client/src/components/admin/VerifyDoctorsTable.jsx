@@ -3,7 +3,7 @@ import api from '../../utils/api';
 import toast from 'react-hot-toast';
 import { CheckCircle, XCircle } from 'lucide-react';
 
-const VerifyDoctorsTable = () => {
+const VerifyDoctorsTable = ({ onVerify }) => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +29,7 @@ const VerifyDoctorsTable = () => {
       await api.put(`/admin/doctors/${doctorId}/verify`, { isVerified: status === 'approve' });
       toast.success(`Doctor ${status === 'approve' ? 'verified' : 'rejected'} successfully`);
       fetchPendingDoctors();
+      if (onVerify) onVerify(); // Tell the parent to refetch stats
     } catch (error) {
       toast.error('Failed to update doctor status');
     }
