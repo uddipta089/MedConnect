@@ -6,7 +6,7 @@ export const getDoctorProfile = async (userId) => {
   const doctor = await Doctor.findOne({ userId })
     .populate('userId', 'firstName lastName email profileImage isVerified')
     .populate('hospitalId')
-    .populate('specialization');
+    .populate('specializationId');
     
   if (!doctor) throw new Error('Doctor profile not found');
 
