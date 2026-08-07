@@ -3,12 +3,18 @@ import { sendResponse } from '../utils/responseHandler.js';
 import * as authService from '../services/authService.js';
 import User from '../models/User.js';
 
-// @desc    Register a new patient
+// @desc    Register a new user
 // @route   POST /api/v1/auth/register
 // @access  Public
 export const register = asyncHandler(async (req, res) => {
-  const { user, token } = await authService.registerPatient(req.body);
-  sendResponse(res, 201, 'Registration successful', { user, token });
+  let result;
+  if (req.body.role === 'Doctor') {
+    result = await authService.registerDoctor(req.body);
+  } else {
+    // Default to Patient
+    result = await authService.registerPatient(req.body);
+  }
+  sendResponse(res, 201, 'Registration successful', result);
 });
 
 // @desc    Login user
