@@ -18,10 +18,10 @@ const BookAppointmentModal = ({ isOpen, onClose, onAppointmentBooked }) => {
     }
   }, [isOpen]);
 
-  const fetchDoctors = async () => {
+    const fetchDoctors = async () => {
     try {
-      const res = await api.get('/doctors');
-      setDoctors(res.data.data);
+      const res = await api.get('/doctors/search');
+      setDoctors(res.data.doctors || []);
     } catch (err) {
       toast.error('Failed to load doctors');
     }
