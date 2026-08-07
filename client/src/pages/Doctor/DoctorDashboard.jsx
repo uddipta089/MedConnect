@@ -49,7 +49,7 @@ const DoctorDashboard = () => {
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center gap-4">
           <h1 className="text-3xl font-bold text-gray-900">Doctor Dashboard</h1>
-          {profile?.isVerified ? (
+          {profile?.isVerifiedByAdmin ? (
             <span className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full font-medium border border-green-200">Verified Profile</span>
           ) : (
             <span className="px-3 py-1 bg-amber-100 text-amber-800 text-sm rounded-full font-medium border border-amber-200">Pending Verification</span>
