@@ -14,6 +14,14 @@ export const getDashboardStats = asyncHandler(async (req, res) => {
   sendResponse(res, 200, 'Dashboard stats fetched', stats);
 });
 
+// @desc    Get all doctors (Admin)
+// @route   GET /api/v1/admin/doctors
+// @access  Private/Admin
+export const getAllDoctorsAdmin = asyncHandler(async (req, res) => {
+  const doctors = await Doctor.find().populate('userId', 'firstName lastName email');
+  sendResponse(res, 200, 'Doctors fetched successfully', doctors);
+});
+
 // @desc    Verify doctor
 // @route   PUT /api/v1/admin/doctors/:id/verify
 // @access  Private/Admin
