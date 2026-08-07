@@ -28,8 +28,8 @@ export const getAllDoctorsAdmin = asyncHandler(async (req, res) => {
 // @route   PUT /api/v1/admin/doctors/:id/verify
 // @access  Private/Admin
 export const verifyDoctor = asyncHandler(async (req, res) => {
-  const doctor = await adminService.verifyDoctor(req.params.id);
-  sendResponse(res, 200, 'Doctor verified successfully', doctor);
+  const doctor = await adminService.verifyDoctor(req.params.id, req.body.isVerified);
+  sendResponse(res, 200, `Doctor ${req.body.isVerified ? 'verified' : 'rejected'} successfully`, doctor);
 });
 
 // @desc    Toggle block user
