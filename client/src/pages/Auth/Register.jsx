@@ -11,8 +11,11 @@ const Register = () => {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '',
     password: '',
-    role: 'Patient'
+    role: 'Patient',
+    licenseNumber: '',
+    consultationFee: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const { register } = useAuth();
@@ -47,7 +50,8 @@ const Register = () => {
             <Input label="Last Name" name="lastName" required value={formData.lastName} onChange={handleChange} />
           </div>
           <Input label="Email" name="email" type="email" required value={formData.email} onChange={handleChange} />
-          <Input label="Password" name="password" type="password" required minLength="6" value={formData.password} onChange={handleChange} />
+          <Input label="Phone" name="phone" type="tel" required value={formData.phone} onChange={handleChange} />
+          <Input label="Password" name="password" type="password" required minLength="8" value={formData.password} onChange={handleChange} />
           
           <div className="space-y-1">
             <label className="block text-sm font-medium text-gray-700">I am a...</label>
@@ -56,6 +60,13 @@ const Register = () => {
               <option value="Doctor">Doctor</option>
             </select>
           </div>
+
+          {formData.role === 'Doctor' && (
+            <div className="grid grid-cols-2 gap-4">
+              <Input label="License Number" name="licenseNumber" required value={formData.licenseNumber} onChange={handleChange} />
+              <Input label="Consultation Fee ($)" name="consultationFee" type="number" required min="0" value={formData.consultationFee} onChange={handleChange} />
+            </div>
+          )}
 
           <Button type="submit" className="w-full" isLoading={isLoading}>Register</Button>
         </form>
