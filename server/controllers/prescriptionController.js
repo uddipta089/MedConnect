@@ -46,7 +46,7 @@ export const createPrescription = asyncHandler(async (req, res) => {
 // @desc    Get prescription by ID
 // @route   GET /api/v1/prescriptions/:id
 // @access  Private
-export const getPrescription = asyncHandler(async (req, res) => {
+export const getPrescriptionById = asyncHandler(async (req, res) => {
   const prescription = await prescriptionService.getPrescriptionById(req.params.id);
   if (!prescription) {
     res.status(404);
@@ -70,4 +70,41 @@ export const getPatientPrescriptions = asyncHandler(async (req, res) => {
     .sort('-createdAt');
     
   sendResponse(res, 200, 'Prescriptions fetched', prescriptions);
+});
+
+// @desc    Download prescription PDF
+// @route   GET /api/v1/prescriptions/:id/download
+// @access  Private
+export const downloadPrescriptionPDF = asyncHandler(async (req, res) => {
+  const prescription = await prescriptionService.getPrescriptionById(req.params.id);
+  if (!prescription) {
+    res.status(404);
+    throw new Error('Prescription not found');
+  }
+
+  const doc = new PDFDocument();
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename=prescription-${prescription._id}.pdf`);
+  doc.pipe(res);
+
+  doc.fontSize(20).text('MedConnect AI Prescription', { align: 'center' });
+  doc.moveDown();
+  doc.fontSize(12).text(`Date: ${new Date(prescription.createdAt).toLocaleDateString()}`);
+  doc.text(`Patient: ${prescription.patientId.userId.firstName} ${prescription.patientId.userId.lastName}`);
+  doc.text(`Doctor: Dr. ${prescription.doctorId.userId.firstName} ${prescription.doctorId.userId.lastName}`);
+  doc.moveDown();
+  doc.fontSize(14).text('Diagnosis:');
+  doc.fontSize(12).text(prescription.diagnosis);
+  doc.moveDown();
+  doc.fontSize(14).text('Medications:');
+  prescription.medications.forEach(med => {
+    doc.fontSize(12).text(`- ${med.name} (${med.dosage}, ${med.frequency} for ${med.duration})`);
+  });
+  doc.moveDown();
+  if (prescription.advice) {
+    doc.fontSize(14).text('Advice:');
+    doc.fontSize(12).text(prescription.advice);
+  }
+
+  doc.end();
 });
