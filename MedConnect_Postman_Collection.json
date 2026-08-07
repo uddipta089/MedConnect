@@ -1,0 +1,69 @@
+{
+  "info": {
+    "name": "MedConnect AI API",
+    "description": "API collection for MedConnect AI platform",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "url": "{{API_URL}}/api/v1/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\"john@example.com\",\"password\":\"password123\",\"role\":\"Patient\"}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "url": "{{API_URL}}/api/v1/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\":\"john@example.com\",\"password\":\"password123\"}",
+              "options": { "raw": { "language": "json" } }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Patients",
+      "item": [
+        {
+          "name": "Get Timeline",
+          "request": {
+            "method": "GET",
+            "url": "{{API_URL}}/api/v1/patients/timeline",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctors",
+      "item": [
+        {
+          "name": "Get All Doctors",
+          "request": {
+            "method": "GET",
+            "url": "{{API_URL}}/api/v1/doctors"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "API_URL", "value": "http://localhost:5000" },
+    { "key": "TOKEN", "value": "" }
+  ]
+}
