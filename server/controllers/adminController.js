@@ -4,6 +4,8 @@ import * as adminService from '../services/adminService.js';
 import Specialization from '../models/Specialization.js';
 import Hospital from '../models/Hospital.js';
 import User from '../models/User.js';
+import Doctor from '../models/Doctor.js';
+import Appointment from '../models/Appointment.js';
 import { generateCSV, generateExcel, generatePDF } from '../utils/exportHelper.js';
 
 // @desc    Get dashboard stats
