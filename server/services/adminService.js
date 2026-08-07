@@ -66,11 +66,11 @@ export const getDashboardStats = async () => {
   };
 };
 
-export const verifyDoctor = async (doctorId) => {
+export const verifyDoctor = async (doctorId, isVerified = true) => {
   const doctor = await Doctor.findById(doctorId);
   if (!doctor) throw new Error('Doctor not found');
   
-  doctor.isVerifiedByAdmin = true;
+  doctor.isVerifiedByAdmin = isVerified;
   await doctor.save();
   return doctor;
 };
