@@ -11,7 +11,7 @@ const VerifyDoctorsTable = () => {
     try {
       // Fetch all doctors and filter locally for simplicity, or if backend supports it, use query params
       const res = await api.get('/admin/doctors');
-      const pending = res.data.data.filter(d => !d.isVerified);
+      const pending = res.data.data.filter(d => !d.isVerifiedByAdmin);
       setDoctors(pending);
     } catch (error) {
       toast.error('Failed to load pending doctors');
