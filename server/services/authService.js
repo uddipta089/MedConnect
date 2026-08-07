@@ -33,6 +33,34 @@ export const registerPatient = async (patientData) => {
   return { user: { _id: user._id, firstName, lastName, email, role: user.role }, token };
 };
 
+export const registerDoctor = async (doctorData) => {
+  const { firstName, lastName, email, phone, password, licenseNumber, consultationFee, specializationId } = doctorData;
+
+  const userExists = await User.findOne({ $or: [{ email }, { phone }] });
+  if (userExists) {
+    throw new Error('User already exists with this email or phone');
+  }
+
+  const user = await User.create({
+    firstName,
+    lastName,
+    email,
+    phone,
+    password,
+    role: 'Doctor',
+  });
+
+  await Doctor.create({
+    userId: user._id,
+    licenseNumber,
+    consultationFee,
+    specializationId: specializationId || null,
+  });
+
+  const token = generateToken(user._id, user.email, user.role);
+  return { user: { _id: user._id, firstName, lastName, email, role: user.role }, token };
+};
+
 export const loginUser = async (email, password) => {
   const user = await User.findOne({ email }).select('+password');
 
