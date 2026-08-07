@@ -73,7 +73,7 @@ const BookAppointmentModal = ({ isOpen, onClose, onAppointmentBooked }) => {
               <option value="">Choose a specialist...</option>
               {doctors.map(doc => (
                 <option key={doc._id} value={doc._id}>
-                  Dr. {doc.userId?.firstName} {doc.userId?.lastName} - {doc.specialization}
+                  Dr. {doc.userId?.firstName} {doc.userId?.lastName} - {doc.specializationId?.name || 'Doctor'}
                 </option>
               ))}
             </select>
