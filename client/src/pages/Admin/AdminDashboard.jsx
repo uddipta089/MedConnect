@@ -9,17 +9,18 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const fetchStats = async () => {
+    try {
+      const res = await api.get('/admin/dashboard');
+      setStats(res.data.data);
+    } catch (err) {
+      toast.error('Failed to load admin stats');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await api.get('/admin/dashboard');
-        setStats(res.data.data);
-      } catch (err) {
-        toast.error('Failed to load admin stats');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchStats();
   }, []);
 
@@ -109,7 +110,7 @@ const AdminDashboard = () => {
 
       <div className="glass rounded-xl p-6 border border-slate-200 shadow-sm mb-8">
         <h2 className="text-xl font-semibold mb-6">Doctor Verifications</h2>
-        <VerifyDoctorsTable />
+        <VerifyDoctorsTable onVerify={fetchStats} />
       </div>
 
       <div className="glass rounded-xl p-6 border border-slate-200 shadow-sm">
