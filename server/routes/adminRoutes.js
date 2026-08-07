@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   getDashboardStats,
+  getAllDoctorsAdmin,
   verifyDoctor,
   toggleBlockUser,
   createSpecialization,
@@ -18,6 +19,7 @@ router.use(protect);
 router.use(authorize('Admin'));
 
 router.get('/dashboard', getDashboardStats);
+router.get('/doctors', getAllDoctorsAdmin);
 router.get('/export/users', exportUsers);
 router.put('/doctors/:id/verify', verifyDoctor);
 router.put('/users/:id/block', toggleBlockUser);
