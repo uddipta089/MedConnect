@@ -59,10 +59,18 @@ export const getPrescriptionById = asyncHandler(async (req, res) => {
 // @route   GET /api/v1/prescriptions/patient
 // @access  Private/Patient
 export const getPatientPrescriptions = asyncHandler(async (req, res) => {
-  const patient = await Patient.findOne({ userId: req.user.id });
-  if (!patient) throw new Error('Patient not found');
+  let patientId;
 
-  const prescriptions = await Prescription.find({ patientId: patient._id })
+  if (req.user.role === 'Doctor') {
+    if (!req.params.patientId) throw new Error('Patient ID is required');
+    patientId = req.params.patientId;
+  } else {
+    const patient = await Patient.findOne({ userId: req.user.id });
+    if (!patient) throw new Error('Patient not found');
+    patientId = patient._id;
+  }
+
+  const prescriptions = await Prescription.find({ patientId })
     .populate({
       path: 'doctorId',
       populate: { path: 'userId', select: 'firstName lastName' }
