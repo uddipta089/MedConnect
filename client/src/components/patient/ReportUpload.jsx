@@ -8,6 +8,7 @@ import { UploadCloud, X } from 'lucide-react';
 const ReportUpload = ({ isOpen, onClose, onUploadComplete }) => {
   const [file, setFile] = useState(null);
   const [reportType, setReportType] = useState('');
+  const [title, setTitle] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
@@ -16,14 +17,15 @@ const ReportUpload = ({ isOpen, onClose, onUploadComplete }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!file || !reportType) {
-      return toast.error('Please select a file and report type');
+    if (!file || !reportType || !title) {
+      return toast.error('Please fill all required fields');
     }
 
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
     formData.append('reportType', reportType);
+    formData.append('title', title);
 
     try {
       await api.post('/reports/upload', formData, {
@@ -64,6 +66,15 @@ const ReportUpload = ({ isOpen, onClose, onUploadComplete }) => {
             <p className="text-xs text-slate-500 mt-2">PDF, PNG, JPG up to 10MB</p>
             {file && <p className="mt-4 text-sm font-semibold text-emerald-600">{file.name}</p>}
           </div>
+
+          <Input 
+            label="Report Title" 
+            type="text" 
+            required 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)} 
+            placeholder="e.g. Annual Blood Work"
+          />
 
           <Input 
             label="Report Type (e.g. Blood Test, X-Ray)" 
