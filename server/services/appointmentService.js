@@ -80,6 +80,12 @@ export const bookAppointment = async (userId, appointmentData) => {
   const { doctorId, date, slot, reason, consultationMode } = appointmentData;
   const appointmentDate = moment(date, 'YYYY-MM-DD').toDate();
 
+  // Validate that the slot is actually available on this day
+  const availableSlots = await generateAvailableSlots(doctorId, date);
+  if (!availableSlots.includes(slot)) {
+    throw new Error('The requested time slot is not available on this date.');
+  }
+
   // Double Booking Prevention via Transaction
   const session = await mongoose.startSession();
   let appointment;
