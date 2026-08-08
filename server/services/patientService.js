@@ -60,9 +60,14 @@ export const getHealthTimeline = async (userId) => {
   if (!patient) throw new Error('Patient not found');
   const patientId = patient._id;
 
-  const appointments = await Appointment.find({ patientId }).populate('doctorId', 'userId');
-  const prescriptions = await Prescription.find({ patientId }).populate('doctorId', 'userId');
-  const reports = await MedicalReport.find({ patientId, isSoftDeleted: false }).populate('doctorId', 'userId');
+  const populateDoctor = {
+    path: 'doctorId',
+    populate: { path: 'userId', select: 'firstName lastName' }
+  };
+
+  const appointments = await Appointment.find({ patientId }).populate(populateDoctor);
+  const prescriptions = await Prescription.find({ patientId }).populate(populateDoctor);
+  const reports = await MedicalReport.find({ patientId, isSoftDeleted: false }).populate(populateDoctor);
 
   const timeline = [
     ...appointments.map(a => ({ type: 'APPOINTMENT', date: a.date, data: a })),
