@@ -5,7 +5,7 @@ import Input from '../ui/Input';
 import toast from 'react-hot-toast';
 import { X, FileSignature } from 'lucide-react';
 
-const PrescriptionForm = ({ isOpen, onClose, patientId }) => {
+const PrescriptionForm = ({ isOpen, onClose, patientId, appointmentId }) => {
   const [diagnosis, setDiagnosis] = useState('');
   const [advice, setAdvice] = useState('');
   const [medicines, setMedicines] = useState([{ name: '', dosage: '', instructions: '' }]);
@@ -23,17 +23,26 @@ const PrescriptionForm = ({ isOpen, onClose, patientId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!diagnosis || !patientId || medicines[0].name === '') {
+    if (!diagnosis || !appointmentId || medicines[0].name === '') {
       return toast.error('Please fill required fields');
     }
     
     setLoading(true);
     try {
+      const mappedMedicines = medicines.map(m => ({
+        medicineName: m.name,
+        dosage: m.dosage,
+        frequency: "As prescribed", // Default since UI didn't have it
+        duration: "As prescribed", // Default
+        instructions: m.instructions
+      }));
+
       await api.post('/prescriptions', {
-        patientId,
+        appointmentId,
+        patientId, // not in zod schema but good for controller
         diagnosis,
-        medicines,
-        advice
+        medicines: mappedMedicines,
+        notes: advice
       });
       toast.success('Prescription issued successfully!');
       onClose();
