@@ -14,6 +14,7 @@ const DoctorDashboard = () => {
   const [isAvailabilityOpen, setIsAvailabilityOpen] = useState(false);
   const [isPrescriptionOpen, setIsPrescriptionOpen] = useState(false);
   const [selectedPatientId, setSelectedPatientId] = useState(null);
+  const [selectedApptId, setSelectedApptId] = useState(null);
   const [isTelemedicineOpen, setIsTelemedicineOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
 
@@ -144,7 +145,7 @@ const DoctorDashboard = () => {
                         </button>
                       )}
                       <button 
-                        onClick={() => { setSelectedPatientId(appt.patientId?._id); setIsPrescriptionOpen(true); }}
+                        onClick={() => { setSelectedPatientId(appt.patientId?._id); setSelectedApptId(appt._id); setIsPrescriptionOpen(true); }}
                         className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200"
                       >
                         <FileSignature className="h-3 w-3" /> Issue Rx
@@ -167,7 +168,8 @@ const DoctorDashboard = () => {
       <PrescriptionForm 
         isOpen={isPrescriptionOpen} 
         onClose={() => setIsPrescriptionOpen(false)} 
-        patientId={selectedPatientId} 
+        patientId={selectedPatientId}
+        appointmentId={selectedApptId}
       />
 
       <TelemedicineRoom 
