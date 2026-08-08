@@ -10,6 +10,8 @@ const BookAppointmentModal = ({ isOpen, onClose, onAppointmentBooked }) => {
   const [selectedDoctor, setSelectedDoctor] = useState('');
   const [appointmentDate, setAppointmentDate] = useState('');
   const [appointmentTime, setAppointmentTime] = useState('');
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [slotsLoading, setSlotsLoading] = useState(false);
   const [reason, setReason] = useState('');
   const [consultationMode, setConsultationMode] = useState('In Person');
   const [loading, setLoading] = useState(false);
@@ -17,8 +19,39 @@ const BookAppointmentModal = ({ isOpen, onClose, onAppointmentBooked }) => {
   useEffect(() => {
     if (isOpen) {
       fetchDoctors();
+    } else {
+      // Reset state on close
+      setSelectedDoctor('');
+      setAppointmentDate('');
+      setAppointmentTime('');
+      setReason('');
+      setConsultationMode('In Person');
+      setAvailableSlots([]);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (selectedDoctor && appointmentDate) {
+      fetchSlots();
+    } else {
+      setAvailableSlots([]);
+      setAppointmentTime('');
+    }
+  }, [selectedDoctor, appointmentDate]);
+
+  const fetchSlots = async () => {
+    setSlotsLoading(true);
+    try {
+      const res = await api.get(`/appointments/slots/${selectedDoctor}/${appointmentDate}`);
+      setAvailableSlots(res.data.data || []);
+      setAppointmentTime(''); // Reset selected time when slots change
+    } catch (err) {
+      toast.error('Failed to load available slots');
+      setAvailableSlots([]);
+    } finally {
+      setSlotsLoading(false);
+    }
+  };
 
   const fetchDoctors = async () => {
     try {
@@ -92,13 +125,29 @@ const BookAppointmentModal = ({ isOpen, onClose, onAppointmentBooked }) => {
             onChange={(e) => setAppointmentDate(e.target.value)} 
           />
           
-          <Input 
-            label="Time" 
-            type="time" 
-            required 
-            value={appointmentTime} 
-            onChange={(e) => setAppointmentTime(e.target.value)} 
-          />
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">Time Slot</label>
+            <select 
+              value={appointmentTime} 
+              onChange={(e) => setAppointmentTime(e.target.value)}
+              className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-slate-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-lg disabled:bg-slate-50 disabled:text-slate-500"
+              required
+              disabled={!selectedDoctor || !appointmentDate || slotsLoading || availableSlots.length === 0}
+            >
+              <option value="">
+                {!selectedDoctor || !appointmentDate 
+                  ? 'Select doctor and date first' 
+                  : slotsLoading 
+                  ? 'Loading slots...' 
+                  : availableSlots.length === 0 
+                  ? 'No slots available on this date' 
+                  : 'Choose a time slot...'}
+              </option>
+              {availableSlots.map((slot, idx) => (
+                <option key={idx} value={slot}>{slot}</option>
+              ))}
+            </select>
+          </div>
 
           <Input 
             label="Reason for Visit" 
