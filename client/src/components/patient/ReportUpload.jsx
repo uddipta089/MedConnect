@@ -22,11 +22,11 @@ const ReportUpload = ({ isOpen, onClose, onUploadComplete }) => {
 
     setLoading(true);
     const formData = new FormData();
-    formData.append('report', file);
+    formData.append('file', file);
     formData.append('reportType', reportType);
 
     try {
-      await api.post('/reports', formData, {
+      await api.post('/reports/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       toast.success('Report uploaded successfully!');
