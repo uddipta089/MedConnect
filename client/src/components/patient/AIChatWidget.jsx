@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../../utils/api';
 import { MessageSquare, X, Send, Bot, Mic, MicOff } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 const AIChatWidget = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,29 +50,6 @@ const AIChatWidget = () => {
     scrollToBottom();
   }, [messages]);
 
-  const parseMarkdown = (text) => {
-    if (!text) return { __html: '' };
-    
-    let parsed = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;');
-
-    // Bold
-    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    
-    // Headers
-    parsed = parsed.replace(/### (.*?)(?:\n|$)/g, '<div class="font-bold text-sm mt-3 mb-1 text-blue-700">$1</div>');
-    
-    // Bullets
-    parsed = parsed.replace(/(^|\n)\* (.*?)/g, '$1<div class="flex gap-2 mt-1 ml-2"><span class="text-blue-500">•</span><span>$2</span></div>');
-
-    // Newlines
-    parsed = parsed.replace(/\n/g, '<br/>');
-
-    return { __html: parsed };
-  };
-
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -113,7 +91,20 @@ const AIChatWidget = () => {
               <div key={msg.id} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}>
                 <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${msg.isBot ? 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
                   {msg.isBot ? (
-                    <div dangerouslySetInnerHTML={parseMarkdown(msg.text)} className="leading-relaxed" />
+                    <ReactMarkdown 
+                      components={{
+                        strong: ({node, ...props}) => <span className="font-bold text-slate-900" {...props} />,
+                        h1: ({node, ...props}) => <h1 className="text-xl font-bold mt-3 mb-2 text-blue-700" {...props} />,
+                        h2: ({node, ...props}) => <h2 className="text-lg font-bold mt-3 mb-2 text-blue-700" {...props} />,
+                        h3: ({node, ...props}) => <h3 className="text-base font-bold mt-2 mb-1 text-blue-700" {...props} />,
+                        ul: ({node, ...props}) => <ul className="list-disc pl-5 my-2 space-y-1" {...props} />,
+                        ol: ({node, ...props}) => <ol className="list-decimal pl-5 my-2 space-y-1" {...props} />,
+                        p: ({node, ...props}) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+                        hr: ({node, ...props}) => <hr className="my-3 border-slate-200" {...props} />
+                      }}
+                    >
+                      {msg.text}
+                    </ReactMarkdown>
                   ) : (
                     msg.text
                   )}
