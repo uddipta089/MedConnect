@@ -34,7 +34,8 @@ const PatientDashboard = () => {
 
   const handleCancelAppointment = async (id) => {
     try {
-      await api.put(`/appointments/${id}/cancel`, { cancellationReason: "Cancelled by patient" });
+      // Fixed: Swapped /:id/cancel to /cancel/:id to match backend
+      await api.put(`/appointments/cancel/${id}`, { cancellationReason: "Cancelled by patient" });
       toast.success('Appointment cancelled successfully');
       fetchDashboardData();
     } catch (err) {
