@@ -14,37 +14,16 @@ export const createVideoRoom = async (appointmentId) => {
     return appointment.videoMeetingUrl;
   }
 
-  // Generate Daily.co Room
-  const DAILY_API_KEY = process.env.DAILY_API_KEY;
-  if (!DAILY_API_KEY) {
-    console.warn('DAILY_API_KEY is not set. Generating mock URL for development.');
-    appointment.videoMeetingUrl = `https://medconnect.daily.co/mock-room-${appointmentId}`;
-    await appointment.save();
-    return appointment.videoMeetingUrl;
-  }
-
+  // Generate a free Jitsi Meet room (no API key required, no payment blocks)
   try {
-    const response = await axios.post(
-      'https://api.daily.co/v1/rooms',
-      {
-        properties: {
-          exp: Math.floor(Date.now() / 1000) + 3600, // Expires in 1 hour
-          enable_chat: true
-        }
-      },
-      {
-        headers: {
-          'Authorization': `Bearer ${DAILY_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
-
-    appointment.videoMeetingUrl = response.data.url;
+    const roomName = `MedConnect-Room-${appointmentId}`;
+    const jitsiUrl = `https://meet.jit.si/${roomName}`;
+    
+    appointment.videoMeetingUrl = jitsiUrl;
     await appointment.save();
     return appointment.videoMeetingUrl;
   } catch (err) {
-    console.error('Failed to create Daily.co room:', err.response?.data || err.message);
+    console.error('Failed to generate video room:', err);
     throw new Error('Failed to generate video room');
   }
 };
