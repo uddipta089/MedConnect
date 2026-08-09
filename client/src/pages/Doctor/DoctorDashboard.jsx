@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../utils/api';
-import { Calendar, Users, DollarSign, Clock, Settings, FileSignature, Video } from 'lucide-react';
+import { Calendar, Users, DollarSign, Clock, Settings, Video, FileSignature } from 'lucide-react';
 import toast from 'react-hot-toast';
 import AvailabilityManager from '../../components/doctor/AvailabilityManager';
 import PrescriptionForm from '../../components/doctor/PrescriptionForm';
@@ -17,6 +17,16 @@ const DoctorDashboard = () => {
   const [selectedApptId, setSelectedApptId] = useState(null);
   const [isTelemedicineOpen, setIsTelemedicineOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState('');
+
+  const handleJoinVideo = async (apptId) => {
+    try {
+      const res = await api.get(`/appointments/${apptId}/video`);
+      setVideoUrl(res.data.data.url);
+      setIsTelemedicineOpen(true);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to join video room');
+    }
+  };
 
   const fetchDashboardData = async () => {
       try {
@@ -136,9 +146,9 @@ const DoctorDashboard = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right space-x-2">
-                      {appt.dailyRoomUrl && (
+                      {appt.consultationMode === 'Online' && appt.status !== 'Cancelled' && (
                         <button 
-                          onClick={() => { setVideoUrl(appt.dailyRoomUrl); setIsTelemedicineOpen(true); }}
+                          onClick={() => handleJoinVideo(appt._id)}
                           className="inline-flex items-center gap-1 text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
                         >
                           <Video className="h-3 w-3" /> Join
