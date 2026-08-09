@@ -34,7 +34,6 @@ const PatientDashboard = () => {
 
   const handleCancelAppointment = async (id) => {
     try {
-      // Fixed: Swapped /:id/cancel to /cancel/:id to match backend
       await api.put(`/appointments/cancel/${id}`, { cancellationReason: "Cancelled by patient" });
       toast.success('Appointment cancelled successfully');
       fetchDashboardData();
@@ -104,7 +103,17 @@ const PatientDashboard = () => {
                     <div className="font-bold text-slate-900 flex items-center gap-2">
                       {item.type}
                       {item.type === 'APPOINTMENT' && (
-                        <button onClick={() => { setSelectedApptId(item.data._id); setIsQROpen(true); }} className="text-blue-500 hover:text-blue-700 ml-2" title="Show QR Check-in">
+                        <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${
+                          item.data.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
+                          item.data.status === 'Confirmed' ? 'bg-green-100 text-green-700' :
+                          item.data.status === 'Completed' ? 'bg-slate-200 text-slate-700' :
+                          'bg-amber-100 text-amber-700'
+                        }`}>
+                          {item.data.status}
+                        </span>
+                      )}
+                      {item.type === 'APPOINTMENT' && item.data.status !== 'Cancelled' && (
+                        <button onClick={() => { setSelectedApptId(item.data._id); setIsQROpen(true); }} className="text-blue-500 hover:text-blue-700" title="Show QR Check-in">
                           <QrCode className="h-4 w-4" />
                         </button>
                       )}
