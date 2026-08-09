@@ -8,10 +8,12 @@ if (process.env.GEMINI_API_KEY) {
 
 const getModel = () => {
   if (!ai) throw new Error('Gemini API key is not configured');
-  return 'gemini-2.5-flash';
+  // Fixed: Replaced gemini-2.5-flash with the correct gemini-1.5-flash
+  return 'gemini-1.5-flash';
 };
 
 const DISCLAIMER = '\n\nDisclaimer: AI-generated information is for educational purposes only and is not a substitute for professional medical advice.';
+
 
 export const symptomChecker = async (userId, symptoms) => {
   const prompt = `You are a healthcare assistant. You do not diagnose diseases. You do not prescribe medicines. 
