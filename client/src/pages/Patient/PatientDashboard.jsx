@@ -6,6 +6,8 @@ import BookAppointmentModal from '../../components/patient/BookAppointmentModal'
 import ReportUpload from '../../components/patient/ReportUpload';
 import AIChatWidget from '../../components/patient/AIChatWidget';
 import QRModal from '../../components/patient/QRModal';
+import TelemedicineRoom from '../../components/doctor/TelemedicineRoom';
+import { Video } from 'lucide-react';
 
 const PatientDashboard = () => {
   const [timeline, setTimeline] = useState([]);
@@ -14,7 +16,19 @@ const PatientDashboard = () => {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isQROpen, setIsQROpen] = useState(false);
+  const [isTelemedicineOpen, setIsTelemedicineOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
   const [selectedApptId, setSelectedApptId] = useState(null);
+
+  const handleJoinVideo = async (apptId) => {
+    try {
+      const res = await api.get(`/appointments/${apptId}/video`);
+      setVideoUrl(res.data.data.url);
+      setIsTelemedicineOpen(true);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to join video room');
+    }
+  };
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -113,9 +127,16 @@ const PatientDashboard = () => {
                         </span>
                       )}
                       {item.type === 'APPOINTMENT' && item.data.status !== 'Cancelled' && (
-                        <button onClick={() => { setSelectedApptId(item.data._id); setIsQROpen(true); }} className="text-blue-500 hover:text-blue-700" title="Show QR Check-in">
-                          <QrCode className="h-4 w-4" />
-                        </button>
+                        <>
+                          <button onClick={() => { setSelectedApptId(item.data._id); setIsQROpen(true); }} className="text-blue-500 hover:text-blue-700 ml-2" title="Show QR Check-in">
+                            <QrCode className="h-4 w-4" />
+                          </button>
+                          {item.data.consultationMode === 'Online' && (
+                            <button onClick={() => handleJoinVideo(item.data._id)} className="text-blue-500 hover:text-blue-700 ml-2" title="Join Video Call">
+                              <Video className="h-4 w-4" />
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                     <time className="text-xs text-slate-500">{new Date(item.date).toLocaleDateString()}</time>
@@ -154,6 +175,12 @@ const PatientDashboard = () => {
         isOpen={isQROpen} 
         onClose={() => setIsQROpen(false)} 
         appointmentId={selectedApptId} 
+      />
+
+      <TelemedicineRoom 
+        isOpen={isTelemedicineOpen} 
+        onClose={() => { setIsTelemedicineOpen(false); setVideoUrl(''); }} 
+        url={videoUrl} 
       />
 
       <AIChatWidget />
