@@ -49,6 +49,29 @@ const AIChatWidget = () => {
     scrollToBottom();
   }, [messages]);
 
+  const parseMarkdown = (text) => {
+    if (!text) return { __html: '' };
+    
+    let parsed = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Bold
+    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Headers
+    parsed = parsed.replace(/### (.*?)(?:\n|$)/g, '<div class="font-bold text-sm mt-3 mb-1 text-blue-700">$1</div>');
+    
+    // Bullets
+    parsed = parsed.replace(/(^|\n)\* (.*?)/g, '$1<div class="flex gap-2 mt-1 ml-2"><span class="text-blue-500">•</span><span>$2</span></div>');
+
+    // Newlines
+    parsed = parsed.replace(/\n/g, '<br/>');
+
+    return { __html: parsed };
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -88,8 +111,12 @@ const AIChatWidget = () => {
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
             {messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.isBot ? 'justify-start' : 'justify-end'}`}>
-                <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.isBot ? 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
-                  {msg.text}
+                <div className={`max-w-[85%] p-3 rounded-2xl text-sm ${msg.isBot ? 'bg-white border border-slate-200 text-slate-700 rounded-tl-sm' : 'bg-blue-600 text-white rounded-tr-sm'}`}>
+                  {msg.isBot ? (
+                    <div dangerouslySetInnerHTML={parseMarkdown(msg.text)} className="leading-relaxed" />
+                  ) : (
+                    msg.text
+                  )}
                 </div>
               </div>
             ))}
