@@ -84,7 +84,7 @@ Assistant:`;
     contents: prompt,
   });
   
-  const text = response.text + DISCLAIMER;
+  const text = response.text;
 
   conversation.messages.push({ role: 'user', content: message });
   conversation.messages.push({ role: 'model', content: text });
