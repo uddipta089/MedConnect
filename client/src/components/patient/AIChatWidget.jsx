@@ -62,7 +62,8 @@ const AIChatWidget = () => {
       const res = await api.post('/ai/chat', { message: userText });
       setMessages(prev => [...prev, { id: Date.now(), text: res.data.data.response, isBot: true }]);
     } catch (error) {
-      setMessages(prev => [...prev, { id: Date.now(), text: "Sorry, I am having trouble connecting right now.", isBot: true }]);
+      const errorMsg = error.response?.data?.message || "Sorry, I am having trouble connecting right now.";
+      setMessages(prev => [...prev, { id: Date.now(), text: errorMsg, isBot: true }]);
     } finally {
       setLoading(false);
     }
